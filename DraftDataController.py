@@ -1,0 +1,1 @@
+#Manipluates data from model
