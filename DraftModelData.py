@@ -1,6 +1,6 @@
 import requests as req
 from bs4 import BeautifulSoup
-#from pprint import pprint
+from pprint import pprint
 
 URL = "https://www.fantasypros.com/nfl/rankings/consensus-cheatsheets.php"
 overAllPlayerList = req.get(URL)
@@ -9,7 +9,7 @@ FanSoup = BeautifulSoup(overAllPlayerList.content, 'html.parser')
 
 players = FanSoup.find(id='rank-data')
 #pprint(players)
-playerRanks = players.find_all('td', class_="sticky-cell sticky-cell-one")
+#playerRanks = players.find_all('td', class_="sticky-cell sticky-cell-one")
 playerNames = players.find_all('span', class_="full-name")
 
 #PlayerData doesn't work
