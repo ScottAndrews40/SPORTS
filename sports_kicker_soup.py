@@ -15,7 +15,8 @@ kicker_list.append(["Rank", "BYE", "BEST", "WORST", "AVG", "STP DEV", "ADP",
 
 for kicker in K_SOUP_TABLE_ELEMS:
     if (kicker.has_attr('data-id')):
-        kicker_player = (kicker.text).split('\n')
+        #kicker_player = (kicker.text).split()
+        '''
         kicker_player.remove('')
         kicker_player.remove('')
         kicker_elem = kicker.find(class_ = name_class)
@@ -24,5 +25,6 @@ for kicker in K_SOUP_TABLE_ELEMS:
         del kicker_player[1:2]
         kicker_player.append([kicker_name.text, kicker_team.text])
         kicker_list.append(kicker_player)
-
-print(kicker_list)
+        '''
+        print(kicker.text.split())
+#print(kicker_list)
