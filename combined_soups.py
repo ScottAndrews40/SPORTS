@@ -5,92 +5,83 @@
 import requests as req
 from bs4 import BeautifulSoup
 
+# Quarter Backs
+QB_URL = 'https://www.fantasypros.com/nfl/rankings/qb-cheatsheets.php'
+QB_HTML = req.get(QB_URL)
+QB_SOUP = BeautifulSoup(QB_HTML.content, 'html.parser')
+QB_RANK_WINDOW = QB_SOUP.find(id='rank-data')
+QB_DATA = QB_RANK_WINDOW.find_all('tr')
+QB_LIST = []
+
+# BeautifulSoup setup for scraping of running backs and their stats
+RB_URL = 'https://www.fantasypros.com/nfl/rankings/half-point-ppr-rb-cheatsheets.php'
+RB_HTML = req.get(RB_URL)
+RB_SOUP = BeautifulSoup(RB_HTML.content, 'html.parser')
+RB_RANK_WINDOW = RB_SOUP.find(id='rank-data')
+RB_DATA = RB_RANK_WINDOW.find_all('tr')
+RB_LIST = []
+
+# BeautifulSoup setup for scraping of wide receivers and their stats
+WR_URL = 'https://www.fantasypros.com/nfl/rankings/half-point-ppr-wr-cheatsheets.php'
+WR_HTML = req.get(WR_URL)
+WR_SOUP = BeautifulSoup(WR_HTML.content, 'html.parser')
+WR_RANK_WINDOW = WR_SOUP.find(id='rank-data')
+WR_DATA = WR_RANK_WINDOW.find_all('tr')
+WR_LIST = []
+
 # BeautifulSoup setup for scraping of kickers and their stats
 K_URL = 'https://www.fantasypros.com/nfl/rankings/k-cheatsheets.php'
 K_HTML = req.get(K_URL)
-K_Soup = BeautifulSoup(K_HTML.content, 'html.parser')
-K_SOUP_TABLE = K_Soup.find(id = "rank-data")
-K_SOUP_TABLE_ELEMS = K_SOUP_TABLE.find_all('tr')
-KICKER_LIST = []
+K_SOUP = BeautifulSoup(K_HTML.content, 'html.parser')
+K_RANK_WINDOW = K_SOUP.find(id = "rank-data")
+K_DATA = K_RANK_WINDOW.find_all('tr')
+K_LIST = []
 
 # BeautifulSoup setup for scraping of tight ends and their stats
 TE_URL = 'https://www.fantasypros.com/nfl/rankings/half-point-ppr-te-cheatsheets.php'
 TE_HTML = req.get(TE_URL)
-TE_Soup = BeautifulSoup(TE_HTML.content, 'html.parser')
-TE_SOUP_TABLE = TE_Soup.find(id = "rank-data")
-TE_SOUP_TABLE_ELEMS = TE_SOUP_TABLE.find_all('tr')
-TIGHT_ENDS_LIST = []
+TE_SOUP = BeautifulSoup(TE_HTML.content, 'html.parser')
+TE_RANK_WINDOW = TE_SOUP.find(id = "rank-data")
+TE_DATA = TE_RANK_WINDOW.find_all('tr')
+TE_LIST = []
 
 # BeautifulSoup setup for scraping of defenses and their stats
 DEF_URL = 'https://www.fantasypros.com/nfl/rankings/dst-cheatsheets.php'
 DEF_HTML = req.get(DEF_URL)
-DEF_Soup = BeautifulSoup(DEF_HTML.content, 'html.parser')
-DEF_SOUP_TABLE = DEF_Soup.find(id = "rank-data")
-DEF_SOUP_TABLE_ELEMS = DEF_SOUP_TABLE.find_all('tr')
-DEFENSE_LIST = []
+DEF_SOUP = BeautifulSoup(DEF_HTML.content, 'html.parser')
+DEF_RANK_WINDOW = DEF_SOUP.find(id = "rank-data")
+DEF_DATA = DEF_RANK_WINDOW.find_all('tr')
+DEF_LIST = []
 
 # Header List for first entry in defense/kicker/tight end lists
-HEADER_LIST = ["Rank", "BYE", "BEST", "WORST", "AVG", "STP DEV", "ADP",
-                    "VS. ADP", ["Name", "Team"]]
+HEADER_LIST = ["Rank", "First Name", "Last Name", "Team", "BYE", "BEST",
+               "WORST", "AVG", "STP DEV", "ADP", "VS. ADP"]
 
-# Function which goes through html code provided by soup to make a sublist from
-# stats and player name/team to append to KICKER_LIST. Returns KICKER_LIST, a
-# list, which contains every entry from the corresponding website along with
-# their relevant information.
-def scrape_kickers() -> list:
-    KICKER_LIST.append(HEADER_LIST)
-    for kicker in K_SOUP_TABLE_ELEMS:
-        if (kicker.has_attr('data-id')):
-            kicker_stats = (kicker.text).split('\n') #Split text attribute from kicker into list
-            kicker_stats.remove('') #Remove extra, empty strings in kicker_stats
-            kicker_stats.remove('')
-            del kicker_stats[1:2]   #Delete second entry b/c name/team are displayed together incorrectly
-            
-            kicker_elem = kicker.find(class_ = 'wsis') 
-            kicker_stats.append([kicker_elem['data-name'],
-                                 kicker_elem['data-team']]) #Find name/team of player and append them as a sublist to kicker_stats list
-            KICKER_LIST.append(kicker_stats)
-    return KICKER_LIST #Return list which contains all ranked kickers from the given url
+# Base function for scraping
+def scrape_position(pos_data) -> list:
+    position_list = []
+    position_list.append(HEADER_LIST)
 
-# Function which goes through html code provided by soup to make a sublist from
-# stats and player name/team to append to TIGHT_ENDS_LIST. Returns
-# TIGHT_ENDS_LIST, a list, which contains every entry from the corresponding
-#website along with their relevant information.
-def scrape_tight_ends() -> list:
-    TIGHT_ENDS_LIST.append(HEADER_LIST)
-    for tight_end in TE_SOUP_TABLE_ELEMS:
-        if (tight_end.has_attr('data-id')):
-            tight_end_stats = (tight_end.text).split('\n')
-            tight_end_stats.remove('')
-            tight_end_stats.remove('')
-            del tight_end_stats[1:2]
-            
-            tight_end_elem = tight_end.find(class_ = 'wsis')
-            tight_end_stats.append([tight_end_elem['data-name'],
-                                     tight_end_elem['data-team']])
-            TIGHT_ENDS_LIST.append(tight_end_stats)
-    return TIGHT_ENDS_LIST
+    for players in pos_data:
+        if players.has_attr('data-id'):
+            position_list.append(players.text.split())
+    
+    for elem in position_list:
+        if (elem[2]) != 'Last Name':
+            del elem[2]
 
-# Function which goes through html code provided by soup to make a sublist from
-# stats and the teams to append to DEFENSE_LIST. Returns DEFENSE_LIST, a list,
-# which contains every entry from the corresponding website along with their
-# relevant information.
-def scrape_defense() -> list:
-    DEFENSE_LIST.append(HEADER_LIST)
-    for defense in DEF_SOUP_TABLE_ELEMS:
-        if (defense.has_attr('data-id')):
-            defense_stats = (defense.text).split('\n')
-            defense_stats.remove('')
-            defense_stats.remove('')
-            del defense_stats[1:2]
-            
-            defense_elem = defense.find(class_ = 'wsis')
-            defense_stats.append([defense_elem['data-name'],
-                                 defense_elem['data-team']])
-            DEFENSE_LIST.append(defense_stats)
-    return DEFENSE_LIST
+    return position_list
 
 if __name__ == '__main__':
-    print(scrape_kickers())
-    print(scrape_tight_ends())
-    print(scrape_defense())
+    QB_LIST = scrape_position(QB_DATA)
+    RB_LIST = scrape_position(RB_DATA)
+    WR_LIST = scrape_position(WR_DATA)
+    K_LIST = scrape_position(K_DATA)
+    TE_LIST = scrape_position(TE_DATA)
+    D_LIST = scrape_position(DEF_DATA)
+    print(QB_LIST)
+    print(RB_LIST)
+    print(WR_LIST)
+    print(K_LIST)
+    print(TE_LIST)
+    print(D_LIST)

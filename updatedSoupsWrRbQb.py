@@ -109,7 +109,8 @@ def scrape_wr_data() -> list:
 ## print('\n'*3)
 for k in scrape_rb_data():
     print(k)
-
+for k in scrape_qb_data():
+    print(k)
 '''
 # Defense
 DEF_URL = 'https://www.fantasypros.com/nfl/rankings/dst-cheatsheets.php'
