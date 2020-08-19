@@ -1,4 +1,4 @@
-# File containings all soups which are used to scrape necessary players/teams/
+# File containing all soups which are used to scrape necessary players/teams/
 # stats from fantasypros.com. File will be merged with projModel file once
 # completed.
 
@@ -45,15 +45,47 @@ TE_RANK_WINDOW = TE_SOUP.find(id="rank-data")
 TE_DATA = TE_RANK_WINDOW.find_all('tr')
 # TE_LIST = []
 
+#  DEFENSE REQUIRED A DIFFERENT APPROACH TO GET A CLEAN LOOKING LIST ###
 # BeautifulSoup setup for scraping of defenses and their stats
 DEF_URL = 'https://www.fantasypros.com/nfl/rankings/dst-cheatsheets.php'
 DEF_HTML = req.get(DEF_URL)
 DEF_SOUP = BeautifulSoup(DEF_HTML.content, 'html.parser')
 DEF_RANK_WINDOW = DEF_SOUP.find(id="rank-data")
-DEF_DATA = DEF_RANK_WINDOW.find_all('tr')
-# DEF_LIST = []
+# DEF_DATA = DEF_RANK_WINDOW.find_all('tr') OLD APPROACH
 
-# Header List for first entry in defense/kicker/tight end lists
+DEF_DATA = DEF_RANK_WINDOW.find_all('tr',
+                                    attrs={'data-id': ['8270', '8240', '8020', '8030', '8180', '8190', '8050', '8150',
+                                                       '8170', '8280', '8230', '8090', '8250', '8130', '8290', '8300',
+                                                       '8260', '8080', '8110', '8070', '8210', '8120', '8310', '8140',
+                                                       '8100', '8010', '8000', '8040', '8160', '8220', '8060', '8200']})
+Names = []
+# print(DEF_DATA)
+# creates list of full name of team's state with shorthand in parenthesis
+for names in DEF_DATA:
+    Names.append(names.find(class_="full-name").text)
+
+# pprint.pprint(Names)
+# creates list of Defense data bYe, points avg etc
+DEF_HEADER = ["RANK", "STATE/NAME", "BYE", "BEST",
+              "WORST", "AVG", "STP DEV", "ADP", "VS. ADP"]
+D_LIST = [DEF_HEADER]
+for Dplayers in DEF_DATA:
+    D_LIST.append(Dplayers.text.split())
+
+# pprint.pprint(DEF_LIST)
+# replaces short name with full name of state and deletes irrelevant elements taken from .append(Dplayers.text.split())
+i = 0
+for Dplayers in D_LIST[1:]:
+    Dplayers[1] = Names[i]
+    i += 1
+    if len(Dplayers) == 12:
+        del Dplayers[2:5]
+    if len(Dplayers) == 11:
+        del Dplayers[2:4]
+
+# pprint.pprint(DEF_LIST)
+
+# Header List for first entry in qb/rb/wr/kicker/tight end lists
 HEADER_LIST = ["Rank", "First Name", "Last Name", "Team", "BYE", "BEST",
                "WORST", "AVG", "STP DEV", "ADP", "VS. ADP"]
 
@@ -66,27 +98,29 @@ def scrape_position(pos_data) -> list:
         if players.has_attr('data-id'):
             position_list.append(players.text.split())
 
+    # This is for deleting short name and Name suffix ie Jr, II
+    # This only applies to players in positions NOT DEFENSE
     for elem in position_list:
-        if (elem[2]) != 'Last Name':
+        if len(elem) == 13:
+            del elem[2:4]
+        else:
+            del elem[2]
+        if '.' in elem[2]:
             del elem[2]
 
     return position_list
 
+
+# These are needed for DratData Controller
 
 QB_LIST = scrape_position(QB_DATA)
 RB_LIST = scrape_position(RB_DATA)
 WR_LIST = scrape_position(WR_DATA)
 K_LIST = scrape_position(K_DATA)
 TE_LIST = scrape_position(TE_DATA)
-D_LIST = scrape_position(DEF_DATA)
+# D_LIST = scrape_position(DEF_DATA)
 
 if __name__ == '__main__':
-    QB_LIST = scrape_position(QB_DATA)
-    RB_LIST = scrape_position(RB_DATA)
-    WR_LIST = scrape_position(WR_DATA)
-    K_LIST = scrape_position(K_DATA)
-    TE_LIST = scrape_position(TE_DATA)
-    D_LIST = scrape_position(DEF_DATA)
     print(QB_LIST)
     print(RB_LIST)
     print(WR_LIST)
