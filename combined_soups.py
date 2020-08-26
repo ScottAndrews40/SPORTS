@@ -100,7 +100,7 @@ def scrape_position(pos_data) -> list:
 
     # This is for deleting short name and Name suffix ie Jr, II
     # This only applies to players in positions NOT DEFENSE
-    for elem in position_list:
+    for elem in position_list[1:]:
         if len(elem) == 13:
             del elem[2:4]
         else:
