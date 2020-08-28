@@ -6,7 +6,7 @@
 
 import pandas as pd
 import sqlite3 as sq
-import combined_soups as model_data
+import model_data
 
 # Position lists for Model to be inserted to EXCEL
 # HEADER_LIST = model_data.HEADER_LIST
@@ -44,20 +44,36 @@ c = db_conn.cursor()
 
 # Create tables for everything but DEFENSE
 i = 0
-for frames in DATA_FRAMES[0:5]:
+for frames in DATA_FRAMES:
     frames.to_sql(position_list[i], con=db_conn, if_exists='replace', index=True, index_label='None')
     i += 1
 
+# Leaving this chunk of code here for a bit it is now 8/26
+# I do not think I needed this at all LOL
 # Create DEF table
-DATA_FRAMES[5].to_sql('DEF', con=db_conn, if_exists='replace', index=True, index_label='None')
+# DATA_FRAMES[5].to_sql('DEF', con=db_conn, if_exists='replace', index=True, index_label='None')
 
 # For now we are going to ignore the extra column that is added to the front of each table in the DB
 # it gets an index name of None, I do not know why this gets added.
+# Renaming extra column to WAIVER_STATUS for future use, fuck it.
 
 # Add two columns to each table in data base, injured and selected.
 for table_name in position_list:
     c.execute('ALTER TABLE {} ADD {} VARCHAR'.format(table_name, 'Injured'))
     c.execute('ALTER TABLE {} ADD {} VARCHAR'.format(table_name, 'Selected'))
+    c.execute('ALTER TABLE {} RENAME COLUMN {} to {}'.format(table_name, 'None', 'Waiver_Status'))
+
+# 8/27 TEST SYNTAX FOR UPDATE COMMAND
+# Second input to c.execute() must be a tuple even if it has one var
+# this syntax is for updating data in the tables
+# picked_by = 'DraftBot42069'
+# table = 'RB'
+# THIS SYNTAX WITH SUBQUERY WORKS For automating by best rank
+# sql = '''UPDATE {} SET Selected = ? WHERE Rank = (SELECT min(Rank)
+# FROM {} WHERE Selected IS NULL)'''.format(table, table)
+# c.execute(sql, (picked_by,))
+# picked_by_not_me = 'CumBuckets'
+# c.execute(sql, (picked_by_not_me,))
 
 db_conn.commit()
 db_conn.close()

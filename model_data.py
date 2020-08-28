@@ -66,8 +66,9 @@ for names in DEF_DATA:
 
 # pprint.pprint(Names)
 # creates list of Defense data bYe, points avg etc
-DEF_HEADER = ["RANK", "STATE/NAME", "BYE", "BEST",
-              "WORST", "AVG", "STP DEV", "ADP", "VS. ADP"]
+# Standardized header to sqlite3 column index convention 8/27
+DEF_HEADER = ["Rank", "State_Name", "Bye", "Best",
+              "Worst", "Avg", "Stp_Dev", "Adp", "Vs.Adp"]
 D_LIST = [DEF_HEADER]
 for Dplayers in DEF_DATA:
     D_LIST.append(Dplayers.text.split())
@@ -86,8 +87,11 @@ for Dplayers in D_LIST[1:]:
 # pprint.pprint(DEF_LIST)
 
 # Header List for first entry in qb/rb/wr/kicker/tight end lists
-HEADER_LIST = ["Rank", "First Name", "Last Name", "Team", "BYE", "BEST",
-               "WORST", "AVG", "STP DEV", "ADP", "VS. ADP"]
+# 8/26 Altered First Name, Last Name, STP DEV and VS. ADP so that sql doesn't throw user warning
+# over column index naming convention
+# Standardized header to sqlite3 column index convention 8/27
+HEADER_LIST = ["Rank", "FirstName", "LastName", "Team", "Bye", "Best",
+               "Worst", "Avg", "Stp_Dev", "Adp", "Vs.Adp"]
 
 
 # Base function for scraping
