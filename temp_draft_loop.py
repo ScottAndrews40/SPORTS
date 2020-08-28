@@ -26,10 +26,12 @@ def main():
 
             draft_loop = sdf.are_we_drafting()
 
+        sdf.closing_statement()
         conn.close()
 
     else:
-        print('Thanks for drafting with DraftBot9000.')
+        sdf.closing_statement()
+
 
 
 if __name__ == '__main__':

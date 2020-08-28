@@ -40,20 +40,20 @@ def auto_flag(conn, position_table, picked_by):
 
 # start draft and game loop control
 def are_we_drafting() -> bool:
-    answer = input('Do you wish to start the draft or continue drafting? Please answer yes or no.')
+    answer = input('Do you wish to start the draft or to continue drafting? Please answer yes or no.')
     return True if answer == 'yes' else False
 
 
 # Input string from player mine == True any other == false
 def player_turn() -> bool:
-    answer = input('Is it your turn or someone else? Please respond with mine or other.'
-                   'Note this is case sensitive.')
+    answer = input('Is it your turn or someone else\'s? Please respond with mine or other.'
+                   ' Note this is case sensitive.')
     return True if answer == 'mine' else False
 
 
 def position_to_draft() -> str:
-    return input('What position do you want to draft? Please select either of these options'
-                 'QB, RB, WR, TE, K or DEF please note that this is case sensitive.')
+    return input('What position do you want to draft? Please select either of these options:'
+                 ' QB, RB, WR, TE, K or DEF. Please note that this is case sensitive.')
 
 
 def nfl_player_name() -> str:
@@ -63,3 +63,7 @@ def nfl_player_name() -> str:
 
 def name_of_defense() -> str:
     return input('In this format please enter your defense, San Francisco (SF).')
+
+
+def closing_statement():
+    print('Thanks for drafting with DraftBot9000.')
